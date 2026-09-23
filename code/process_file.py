@@ -21,34 +21,31 @@ Test it: pytest tests/test_streamlit.py -k process_file
 # `one_package.py` is your worked example for anything structural, and README
 # Reference #4 and #5 cover the two things that are new here.
 
-# TODO: imports — streamlit, json, and what you need from packaging_parser.
+import streamlit as st
+import json
+from packaging_parser import calc_total_units, get_unit, parse_packaging 
 
+st.title("Process File of Packages")
 
-# TODO: the title, exactly:   Process File of Packages
+package_data = st.file_uploader("Select a file to process", key="package_data",type=["txt"])
+if package_data is not None:
+    filename = package_data.name
+    data = package_data.read()
+    string_data = data.decode()
+    list_data = string_data.split("\n")
 
+    result_list = []
+    for line in list_data:
+        if line != "":
+            line2 = line.strip()
+            package = parse_packaging(line2)
+            result_list.append(package)
+            total = calc_total_units(package)
+            unit = get_unit(package)
+            st.info(f"{line} ➡️ Total📦 Size: {total} {unit}")
 
-# TODO: a file uploader, key="package_file". Like the text box in Part 1 it returns
-#       a value — None until a file has been chosen — so the same kind of guard
-#       goes around everything below.
-
-
-# 1. Bytes to text. The upload is bytes; decode it, then split it into lines.
-# TODO
-
-
-# 2. Every line: strip it, SKIP IT IF IT IS BLANK, parse it, keep the parsed package
-#    in a list, and show the line with its total. Match this layout:
-#
-#        12 eggs in 1 carton / 3 cartons in 1 box ➡️ Total 📦 Size: 36 eggs
-# TODO
-
-
-# 3. Write the list of parsed packages to data/<name>.json with json.dump, where
-#    <name> is the uploaded file's name with .txt replaced by .json.
-# TODO
-
-
-# 4. Say what happened, exactly:
-#
-#        3 packages written to data/packaging1.json
-# TODO
+    with open(f'data/{filename.replace(".txt", ".json")}', 'w') as file:
+        json.dump(result_list, file)
+        
+    num = len(result_list)
+    st.success(f"{num} packages written to data/{filename.replace('.txt', '.json')}")

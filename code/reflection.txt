@@ -4,3 +4,15 @@ See reflection.md for what makes a good reflection — be specific, use the
 terminology from this assignment (rerun, widget, return value, guard, bytes vs.
 text, decode, session state, initialise once, button-triggered, metric), and make
 it actionable.
+
+I learned how to implement a session state variable in this assignment. I learned that I need to 
+initialize it only if it does not already exist. This is so it can count the number of packages and 
+files between runs without recounting everytime but it creates the variable each time. I also learned 
+how to use buttons to give the user control as to when the program runs, this allowed me to 
+create a program with multiple files uploaded. I struggled a bit with the bytes because I was unsure
+of how to convert that to a string, but I learned about the function .decocde(). I also struggled 
+with where to place the session state variables within the loop that runs on the click of a button. 
+If I placed it before I ran the processed the text, it would be behind so I needed to make sure I 
+added to my variables after the text was processed, but before I called those variables to using st.metric 
+or st.succes. Next time, I will run the code more frequently as I am writing so I can see the impacts of 
+what I am writing. Once I did that, troubleshooting was very easy and I wished I had started earlier.

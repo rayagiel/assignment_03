@@ -38,3 +38,59 @@ Test it: pytest tests/test_streamlit.py -k process_files
 # README Step 7 names the two traps. The tests are built around them: choosing a
 # file without clicking must change nothing, and a rerun with the same file still
 # chosen must not count it again.
+
+import streamlit as st, json
+from packaging_parser import calc_total_units, get_unit, parse_packaging 
+
+st.title("Process Package Files")
+
+if "files_processed" not in st.session_state:
+    st.session_state.files_processed = 0
+
+if "packages_processed" not in st.session_state:
+    st.session_state.packages_processed = 0
+if "success_list" not in st.session_state:
+    st.session_state.success_list = []
+
+package_data = st.file_uploader("Select a file to process", key="package_data",type=["txt"])
+process = st.button("Process file", key="process")
+clear = st.button("Clear", key="clear")
+
+
+
+if process:
+    if package_data is not None:
+        filename = package_data.name.replace(".txt",".json")
+        data = package_data.read()
+        string_data = data.decode()
+        list_data = string_data.split("\n")
+        result_list = []
+        
+        for line in list_data:
+            if line != "":
+                line2 = line.strip()
+                package = parse_packaging(line2)
+                result_list.append(package)
+                total = calc_total_units(package)
+                unit = get_unit(package)
+        with open(f'data/{filename}', 'w') as file:
+            json.dump(result_list, file)
+        num = len(result_list)
+        st.session_state.success_list.append(f"{num} packages written to data/{filename}")    
+        st.session_state.packages_processed += num
+        st.session_state.files_processed += 1
+       
+col1, col2 = st.columns(2)
+with col1:
+    st.metric("Files processed", st.session_state.files_processed)
+with col2:
+    st.metric("Packages processed", st.session_state.packages_processed)
+           
+for item in st.session_state.success_list:
+    st.info(item)
+if clear:
+    st.session_state.files_processed = 0
+    st.session_state.packages_processed = 0
+    st.session_state.success_list = []
+
+    
